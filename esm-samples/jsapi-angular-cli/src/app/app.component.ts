@@ -7,10 +7,12 @@ import {
 } from '@angular/core';
 
 import WebMap from '@arcgis/core/WebMap';
+import Map from "@arcgis/core/Map";
 import MapView from '@arcgis/core/views/MapView';
 import Bookmarks from '@arcgis/core/widgets/Bookmarks';
 import Expand from '@arcgis/core/widgets/Expand';
-
+import BasemapGallery from '@arcgis/core/widgets/BasemapGallery';
+import Basemap from "@arcgis/core/Basemap";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -26,16 +28,24 @@ export class AppComponent implements OnInit, OnDestroy {
   initializeMap(): Promise<any> {
     const container = this.mapViewEl.nativeElement;
 
+    const map = new Map({
+      basemap: "streets-vector"
+    })
     const webmap = new WebMap({
       portalItem: {
         id: 'aa1d3f80270146208328cf66d022e09c',
       },
-    });
+    });  
 
     const view = new MapView({
       container,
       map: webmap
     });
+
+    const basemapGallery = new BasemapGallery({
+      view: view,
+      source: [Basemap.fromId("topo-vector"), Basemap.fromId("hybrid")] // autocasts to LocalBasemapsSource
+   });
 
     const bookmarks = new Bookmarks({
       view,
@@ -43,15 +53,22 @@ export class AppComponent implements OnInit, OnDestroy {
       editingEnabled: true,
     });
 
-    const bkExpand = new Expand({
+    const bkExpand1 = new Expand({
       view,
       content: bookmarks,
-      expanded: true,
+      expandIcon: "key",
+      expanded: false,
+    });
+    const bkExpand2 = new Expand({
+      view,
+      content: basemapGallery,
+      expandIcon: "basemap",
+      expanded: false,
     });
 
     // Add the widget to the top-right corner of the view
-    view.ui.add(bkExpand, 'top-right');
-
+    view.ui.add([bkExpand1,bkExpand2], 'top-right');
+    
     // bonus - how many bookmarks in the webmap?
     webmap.when(() => {
       if (webmap.bookmarks && webmap.bookmarks.length) {
@@ -78,5 +95,21 @@ export class AppComponent implements OnInit, OnDestroy {
       // destroy the map view
       this.view.destroy();
     }
+  }
+
+  onChange(){
+    this.view.map = new Map({
+      basemap:"hybrid"
+    })
+    this.view.center.latitude = 30.209615825125955
+    this.view.center.longitude = 31.703621149063412
+    this.view.zoom = 9
+    console.log('clicked')
+  }
+
+  getCenter(){
+    console.log(this.view.center)
+    console.log(this.view.zoom)
+
   }
 }
