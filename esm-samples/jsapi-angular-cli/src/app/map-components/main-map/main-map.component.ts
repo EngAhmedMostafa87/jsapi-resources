@@ -13,6 +13,7 @@ import Bookmarks from '@arcgis/core/widgets/Bookmarks';
 import Expand from '@arcgis/core/widgets/Expand';
 import BasemapGallery from '@arcgis/core/widgets/BasemapGallery';
 import Basemap from "@arcgis/core/Basemap";
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-main-map',
@@ -24,6 +25,7 @@ export class MainMapComponent implements OnInit, OnDestroy {
 
   @ViewChild('mapViewNode', { static: true }) private mapViewEl!: ElementRef;
 
+  constructor(private mapService : MapService) {}
   initializeMap(): Promise<any> {
     const container = this.mapViewEl.nativeElement;
 
@@ -77,7 +79,8 @@ export class MainMapComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.view = view;
+    this.mapService.setView(view);
+    this.view = this.mapService.getView();
     return this.view.when();
   }
 
