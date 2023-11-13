@@ -20,4 +20,9 @@ export class NavBarComponent {
   returnToCenter(){
     this.mapService.ReturnToCenter(29.692629608169508,31.084686051137155,8);
   }
+
+  addPoint(){
+    let center = this.mapService.getCenter().center;
+    this.mapService.AddPoint(center.longitude,center.latitude)
+  }
 }
