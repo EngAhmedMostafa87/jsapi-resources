@@ -23,6 +23,6 @@ export class NavBarComponent {
 
   addPoint(){
     let center = this.mapService.getCenter().center;
-    this.mapService.AddPoint(center.longitude,center.latitude)
+    this.mapService.AddPoint(center.longitude,center.latitude,"you point")
   }
 }

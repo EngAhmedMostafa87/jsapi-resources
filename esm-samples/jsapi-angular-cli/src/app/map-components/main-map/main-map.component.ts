@@ -1,3 +1,4 @@
+import { Company } from './../../services/api/models/company';
 import {
   Component,
   OnInit,
@@ -14,6 +15,7 @@ import Expand from '@arcgis/core/widgets/Expand';
 import BasemapGallery from '@arcgis/core/widgets/BasemapGallery';
 import Basemap from "@arcgis/core/Basemap";
 import { MapService } from 'src/app/services/map.service';
+import { CompanyService } from 'src/app/services/api/companies/company.service';
 
 @Component({
   selector: 'app-main-map',
@@ -25,7 +27,8 @@ export class MainMapComponent implements OnInit, OnDestroy {
 
   @ViewChild('mapViewNode', { static: true }) private mapViewEl!: ElementRef;
 
-  constructor(private mapService : MapService) {}
+  constructor(private mapService: MapService,
+    private companyService: CompanyService) { }
   initializeMap(): Promise<any> {
     const container = this.mapViewEl.nativeElement;
 
@@ -36,7 +39,7 @@ export class MainMapComponent implements OnInit, OnDestroy {
       portalItem: {
         id: 'aa1d3f80270146208328cf66d022e09c',
       },
-    });  
+    });
 
     const view = new MapView({
       container,
@@ -46,7 +49,7 @@ export class MainMapComponent implements OnInit, OnDestroy {
     const basemapGallery = new BasemapGallery({
       view: view,
       source: [Basemap.fromId("topo-vector"), Basemap.fromId("hybrid")] // autocasts to LocalBasemapsSource
-   });
+    });
 
     const bookmarks = new Bookmarks({
       view,
@@ -68,8 +71,8 @@ export class MainMapComponent implements OnInit, OnDestroy {
     });
 
     // Add the widget to the top-right corner of the view
-    view.ui.add([bkExpand1,bkExpand2], 'top-right');
-    
+    view.ui.add([bkExpand1, bkExpand2], 'top-right');
+
     // bonus - how many bookmarks in the webmap?
     webmap.when(() => {
       if (webmap.bookmarks && webmap.bookmarks.length) {
@@ -88,8 +91,14 @@ export class MainMapComponent implements OnInit, OnDestroy {
     // Initialize MapView and return an instance of MapView
     this.initializeMap().then(() => {
       // The map has been initialized
-        console.log('The map is ready.');
+      this.companyService.getCompanies()
+      .subscribe((res: Company[]) => {
+        res.forEach((val, i) => {
+          this.mapService.AddPoint(val.langitude,val.langitude,val.name)
+        })
+      })
     });
+    
   }
 
   ngOnDestroy(): void {

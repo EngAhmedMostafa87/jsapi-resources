@@ -54,7 +54,7 @@ export class MapService {
     return graphicsLayer;    
   }
 
-  AddPoint(longitude:number,latitude:number){
+  AddPoint(longitude:number,latitude:number,txt:string){
     const point = new Point({ //Create a point
       longitude: longitude,
       latitude: latitude
@@ -67,13 +67,32 @@ export class MapService {
         width: 1
       }
     };
+    let textSymbol = {
+      type: "text",  // autocasts as new TextSymbol()
+      color: "white",
+      haloColor: "black",
+      haloSize: "1px",
+      text: txt,
+      xoffset: 3,
+      yoffset: 3,
+      font: {  // autocasts as new Font()
+        size: 12,
+        family: "Josefin Slab",
+        weight: "bold"
+      }
+    };
     const pointGraphic = new Graphic({
       geometry : point,
       symbol: simpleMarkerSymbol
+     });
+     const textGraphic = new Graphic({
+      geometry : point,
+      symbol: textSymbol
      });
 
      let graphicsLayer = this.GetGraphicalLayer();
      
     graphicsLayer.add(pointGraphic);
+    graphicsLayer.add(textGraphic);
   }
 }
